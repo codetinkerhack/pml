@@ -1,0 +1,87 @@
+Prediction Assignment Writeup
+------------------------------
+
+The first step was to look at the data and clean the data.
+
+Removed user name, time based columns and other factor columns.
+Removed rows that were marked as new window = yes
+Removed mean, variance, std deviation, max, min, etc that were used in [original paper]: http://groupware.les.inf.puc-rio.br/public/papers/2013.Velloso.QAR-WLE.pdf for feature selection.
+
+After observing the data it was very hard to determine pattern / correlation between predictors and classification due to number of predictors (52 after cleaning the data). 
+
+So approach I took was to selected as small sample for initial experiment about 5% of test data and run train function without specifying method. 
+Best method was identified using "random forest" algorithm. Accuracy was at about 80%.
+
+After that I've selected larger data set of 20% for training set and left rest for testing:
+
+```{r}
+library(caret)
+
+# Please set path to the folder you have downloaded CSV files to. Please note original CSV files were modified to clean up data.
+setwd("D:/Install/R")
+
+data <- read.csv("pml-training-no.csv")
+set.seed(107)
+inTraining <- createDataPartition(data$classe, p = 0.2, list = FALSE)
+training <-data[inTraining,]
+testing <-data[-inTraining,]
+rfFit <- train(classe ~ ., data = training, method = "rf")
+rfFit
+```
+
+```{r}
+rfFit$finalModel
+```
+
+Then I've used model to run cross validation on the testing set:
+
+```{r}
+rfClasses <- predict(rfFit, newdata = testing)
+```
+  
+Prediction on testing set (80% of test data) turned out to be quite good with Accuracy: 96% and OOB estimate of error rate of 2.91%
+
+```{r}
+confusionMatrix(data = rfClasses, testing$classe)
+```
+
+Next I've produced results for the validation data set:
+
+```{r}
+validateData <- read.csv("pml-testing.csv")
+answers <- predict(rfFit, newdata = validateData)
+answers
+```
+
+Submission of test cases confirmed 20/20 match on validation set that match well estimated model accuracy on the training/test set.
+
+Although results were positive (achieved high accuracy) the downside of RandomForest is the fitted model is not human-readable.
+It was hard to plot graphs or interpret outcome due to nature of the Forest tree algorithm. One of the ways to interpret model was to show importance of predictors to make some sense of the resulting model:
+
+```{r}
+importance(rfFit$finalModel)
+```
+
+In order to improve on readability of the model an attempt was made to use rpart method of library(rpart) that produced single classification tree potentially readable. The results were not promising with cross validation accuracy of 30% that was fairly low compare to Random forest result.
+
+Another attempt was made to use "party" library and ctree algorithm that as well output single classification tree:
+
+```{r}
+inTraining <- createDataPartition(data$classe, p = 0.5, list = FALSE)
+training <-data[inTraining,]
+testing <-data[-inTraining,]
+ctFit <- ctree(classe ~ ., data = training)
+ctFit
+```
+
+Model consisted of 317 nodes and 633 level depth and was not easily interpretable. 
+
+After fitting model and cross validating on the training set result produced was fairly good with accuracy of 85%.
+
+
+```{r}
+ctClass <- predict(ctFit, newdata = testing)
+confusionMatrix(ctClass, testing$classe)
+```
+
+In conclusion rpart and ctree methods accuracy was lower and there was no improvement in readability of the model. Random Forest model still offered optimal accuracy compared to other models.
