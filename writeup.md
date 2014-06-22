@@ -44,10 +44,10 @@ rfFit
 ## 
 ## Resampling results across tuning parameters:
 ## 
-##   mtry  Accuracy  Kappa  Accuracy SD  Kappa SD
-##   2     1         0.9    0.005        0.007   
-##   30    1         0.9    0.005        0.007   
-##   50    0.9       0.9    0.009        0.01    
+##  mtry  Accuracy  Kappa  Accuracy SD  Kappa SD
+##  2     0.953     0.94   0.0055       0.00699 
+##  27    0.959     0.948  0.0053       0.00672 
+##  52    0.95      0.936  0.00901      0.0114  
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
 ## The final value used for the model was mtry = 27.
