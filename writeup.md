@@ -210,6 +210,7 @@ Another attempt was made to use "party" library and ctree algorithm that as well
 
 
 ```r
+library(party)
 inTraining <- createDataPartition(data$classe, p = 0.5, list = FALSE)
 training <-data[inTraining,]
 testing <-data[-inTraining,]
