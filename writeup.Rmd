@@ -5,7 +5,7 @@ The first step was to look at the data and clean the data.
 
 Removed user name, time based columns and other factor columns.
 Removed rows that were marked as new window = yes
-Removed mean, variance, std deviation, max, min, etc that were used in [original paper]: http://groupware.les.inf.puc-rio.br/public/papers/2013.Velloso.QAR-WLE.pdf for feature selection.
+Removed mean, variance, std deviation, max, min, etc that were used in [original paper] http://groupware.les.inf.puc-rio.br/public/papers/2013.Velloso.QAR-WLE.pdf for feature selection.
 
 After observing the data it was very hard to determine pattern / correlation between predictors and classification due to number of predictors (52 after cleaning the data). 
 
@@ -19,7 +19,6 @@ library(caret)
 
 # Please set path to the folder you have downloaded CSV files to. Please note original CSV files were modified to clean up data.
 setwd("D:/Install/R")
-
 data <- read.csv("pml-training-no.csv")
 set.seed(107)
 inTraining <- createDataPartition(data$classe, p = 0.2, list = FALSE)
@@ -67,6 +66,7 @@ In order to improve on readability of the model an attempt was made to use rpart
 Another attempt was made to use "party" library and ctree algorithm that as well output single classification tree:
 
 ```{r}
+library(party)
 inTraining <- createDataPartition(data$classe, p = 0.5, list = FALSE)
 training <-data[inTraining,]
 testing <-data[-inTraining,]
